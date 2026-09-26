@@ -1,0 +1,14 @@
+CREATE DATABASE IF NOT EXISTS product_manager;
+
+USE product_manager;
+
+CREATE TABLE products (
+    id INT(11) NOT NULL AUTO_INCREMENT,
+    nama VARCHAR(100) NOT NULL,
+    kategori VARCHAR(100) NOT NULL,
+    harga DECIMAL(12,2) NOT NULL,
+    stok INT(11) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id)
+);
