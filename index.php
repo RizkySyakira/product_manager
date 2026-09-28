@@ -142,17 +142,6 @@ foreach ($products as $product) {
             font-weight: bold;
         }
 
-        .stok-kritis {
-            background-color: #ffe5e5;
-        }
-
-        .peringatan {
-            color: #d62828;
-            font-size: 12px;
-            font-weight: bold;
-            margin-left: 5px;
-        }
-
         /* Tombol Edit */
 
         .edit {
@@ -290,11 +279,7 @@ foreach ($products as $product) {
 
             <?php foreach ($products as $product): ?>
 
-                <tr
-                    class="<?= $product["stok"] < 3
-                        ? 'stok-kritis'
-                        : '' ?>"
-                >
+                <tr>
 
                     <!-- ID -->
 
@@ -348,14 +333,6 @@ foreach ($products as $product) {
                     <td class="stok">
 
                         <?= $product["stok"] ?>
-
-                        <?php if ($product["stok"] < 3): ?>
-
-                            <span class="peringatan">
-                                Stok Kritis
-                            </span>
-
-                        <?php endif; ?>
 
                     </td>
 
