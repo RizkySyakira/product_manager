@@ -2,8 +2,16 @@
 
 require_once "config/database.php";
 
+// Ambil semua data produk
 $stmt = $pdo->query("SELECT * FROM products");
 $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Hitung total nilai stok
+$totalNilaiStok = 0;
+
+foreach ($products as $product) {
+    $totalNilaiStok += $product["harga"] * $product["stok"];
+}
 
 ?>
 
@@ -19,34 +27,65 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Product Manager</title>
+    <title>Sistem Informasi Data Produk</title>
 
     <style>
 
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f6f8;
+            background-color: #f2f6ff;
             margin: 0;
-            padding: 30px;
+            padding: 40px 20px;
+            color: #333;
         }
 
         .container {
-            max-width: 900px;
+            max-width: 1100px;
             margin: auto;
         }
 
         h1 {
-            margin-bottom: 5px;
+            text-align: center;
+            color: #3157a4;
+            margin-bottom: 8px;
         }
 
-        .deskripsi {
+        .subtitle {
+            text-align: center;
             color: #666;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
         }
+
+        /* Total Nilai Stok */
+
+        .total-box {
+            background-color: #dce9ff;
+            border-left: 6px solid #3157a4;
+            padding: 18px 25px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .total-box h3 {
+            margin: 0 0 8px 0;
+            color: #3157a4;
+        }
+
+        .total {
+            font-size: 25px;
+            font-weight: bold;
+            color: #1f4080;
+        }
+
+        /* Tombol Tambah */
 
         .tambah {
             display: inline-block;
-            background-color: #28a745;
+            background-color: #3157a4;
             color: white;
             text-decoration: none;
             padding: 10px 16px;
@@ -55,51 +94,133 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
 
         .tambah:hover {
-            background-color: #218838;
+            background-color: #1f4080;
         }
 
-        .produk {
+        /* Tabel */
+
+        .table-box {
             background-color: white;
-            border: 1px solid #ddd;
-            border-radius: 8px;
             padding: 20px;
-            margin-bottom: 15px;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            overflow-x: auto;
         }
 
-        .produk h2 {
-            margin-top: 0;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 750px;
         }
 
-        .produk p {
-            margin: 8px 0;
+        th {
+            background-color: #8B0000;
+            color: white;
+            padding: 13px;
+            text-align: left;
         }
+
+        td {
+            padding: 13px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:hover {
+            background-color: #f1f5ff;
+        }
+
+        /* Kategori */
+
+        .kategori {
+            color: #3157a4;
+            font-weight: bold;
+        }
+
+        /* Stok */
+
+        .stok {
+            font-weight: bold;
+        }
+
+        .stok-kritis {
+            background-color: #ffe5e5;
+        }
+
+        .peringatan {
+            color: #d62828;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+
+        /* Tombol Edit */
 
         .edit {
             display: inline-block;
-            background-color: #007bff;
+            background-color: #3157a4;
             color: white;
             text-decoration: none;
-            padding: 8px 14px;
+            padding: 7px 10px;
             border-radius: 5px;
-            margin-top: 10px;
+            margin-right: 5px;
         }
 
         .edit:hover {
-            background-color: #0056b3;
+            background-color: #1f4080;
         }
 
+        /* Tombol Hapus */
+
         .hapus {
-            background-color: #dc3545;
+            background-color: #d62828;
             color: white;
             border: none;
-            padding: 8px 14px;
+            padding: 7px 10px;
             border-radius: 5px;
             cursor: pointer;
-            margin-top: 10px;
         }
 
         .hapus:hover {
-            background-color: #c82333;
+            background-color: #b51f1f;
+        }
+
+        /* Footer */
+
+        .footer {
+            text-align: center;
+            margin-top: 25px;
+            color: #777;
+            font-size: 14px;
+        }
+
+        /* Responsive */
+
+        @media (max-width: 600px) {
+
+            body {
+                padding: 20px 10px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .subtitle {
+                font-size: 14px;
+            }
+
+            .total-box {
+                padding: 15px;
+            }
+
+            .total {
+                font-size: 21px;
+            }
+
+            .table-box {
+                padding: 10px;
+            }
+
         }
 
     </style>
@@ -110,113 +231,205 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <div class="container">
 
-    <h1>Product Manager</h1>
+    <h1>Sistem Informasi Data Produk</h1>
 
-    <p class="deskripsi">
-        Sistem sederhana untuk mengelola data produk.
+    <p class="subtitle">
+        Informasi Data Produk
     </p>
+
+
+    <!-- Total Nilai Stok -->
+
+    <div class="total-box">
+
+        <h3>Total Nilai Stok</h3>
+
+        <div class="total">
+
+            Rp<?= number_format(
+                $totalNilaiStok,
+                0,
+                ',',
+                '.'
+            ) ?>
+
+        </div>
+
+    </div>
+
+
+    <!-- Tombol Tambah -->
 
     <a href="add.php" class="tambah">
         + Tambah Produk
     </a>
 
 
-    <?php if (empty($products)): ?>
+    <!-- Tabel Produk -->
 
-        <div class="produk">
+    <div class="table-box">
 
-            <p>
-                Belum ada produk.
-            </p>
+        <table>
 
-        </div>
+            <tr>
 
-    <?php endif; ?>
+                <th>ID</th>
 
+                <th>Nama</th>
 
-    <?php foreach ($products as $product): ?>
+                <th>Kategori</th>
 
-        <div class="produk">
+                <th>Harga</th>
 
-            <h2>
-                <?= htmlspecialchars(
-                    $product["nama"],
-                    ENT_QUOTES,
-                    "UTF-8"
-                ) ?>
-            </h2>
+                <th>Stok</th>
 
-            <p>
+                <th>Aksi</th>
 
-                <strong>Kategori:</strong>
-
-                <?= htmlspecialchars(
-                    $product["kategori"],
-                    ENT_QUOTES,
-                    "UTF-8"
-                ) ?>
-
-            </p>
-
-            <p>
-
-                <strong>Harga:</strong>
-
-                Rp<?= number_format(
-                    $product["harga"],
-                    0,
-                    ',',
-                    '.'
-                ) ?>
-
-            </p>
-
-            <p>
-
-                <strong>Stok:</strong>
-
-                <?= htmlspecialchars(
-                    $product["stok"],
-                    ENT_QUOTES,
-                    "UTF-8"
-                ) ?>
-
-            </p>
+            </tr>
 
 
-            <a
-                href="edit.php?id=<?= $product["id"] ?>"
-                class="edit"
-            >
-                Edit
-            </a>
+            <?php foreach ($products as $product): ?>
 
-
-            <form
-                action="delete.php"
-                method="POST"
-                style="display: inline;"
-            >
-
-                <input
-                    type="hidden"
-                    name="id"
-                    value="<?= $product["id"] ?>"
+                <tr
+                    class="<?= $product["stok"] < 3
+                        ? 'stok-kritis'
+                        : '' ?>"
                 >
 
-                <button
-                    type="submit"
-                    class="hapus"
-                    onclick="return confirm('Yakin ingin menghapus produk ini?')"
-                >
-                    Hapus
-                </button>
+                    <!-- ID -->
 
-            </form>
+                    <td>
+                        <?= $product["id"] ?>
+                    </td>
 
-        </div>
 
-    <?php endforeach; ?>
+                    <!-- Nama -->
+
+                    <td>
+
+                        <?= htmlspecialchars(
+                            $product["nama"],
+                            ENT_QUOTES,
+                            "UTF-8"
+                        ) ?>
+
+                    </td>
+
+
+                    <!-- Kategori -->
+
+                    <td class="kategori">
+
+                        <?= htmlspecialchars(
+                            $product["kategori"],
+                            ENT_QUOTES,
+                            "UTF-8"
+                        ) ?>
+
+                    </td>
+
+
+                    <!-- Harga -->
+
+                    <td>
+
+                        Rp<?= number_format(
+                            $product["harga"],
+                            0,
+                            ',',
+                            '.'
+                        ) ?>
+
+                    </td>
+
+
+                    <!-- Stok -->
+
+                    <td class="stok">
+
+                        <?= $product["stok"] ?>
+
+                        <?php if ($product["stok"] < 3): ?>
+
+                            <span class="peringatan">
+                                Stok Kritis
+                            </span>
+
+                        <?php endif; ?>
+
+                    </td>
+
+
+                    <!-- Aksi -->
+
+                    <td>
+
+                        <!-- Edit -->
+
+                        <a
+                            href="edit.php?id=<?= $product["id"] ?>"
+                            class="edit"
+                        >
+                            Edit
+                        </a>
+
+
+                        <!-- Hapus -->
+
+                        <form
+                            action="delete.php"
+                            method="POST"
+                            style="display: inline;"
+                        >
+
+                            <!-- CSRF Token -->
+
+                            <input
+                                type="hidden"
+                                name="csrf_token"
+                                value="<?= htmlspecialchars(
+                                    $_SESSION["csrf_token"],
+                                    ENT_QUOTES,
+                                    "UTF-8"
+                                ) ?>"
+                            >
+
+
+                            <!-- ID Produk -->
+
+                            <input
+                                type="hidden"
+                                name="id"
+                                value="<?= $product["id"] ?>"
+                            >
+
+
+                            <button
+                                type="submit"
+                                class="hapus"
+                                onclick="return confirm('Yakin ingin menghapus produk ini?')"
+                            >
+                                Hapus
+                            </button>
+
+                        </form>
+
+                    </td>
+
+                </tr>
+
+            <?php endforeach; ?>
+
+        </table>
+
+    </div>
+
+
+    <div class="footer">
+
+        Sistem Informasi Data Produk
+
+    </div>
 
 </div>
 
